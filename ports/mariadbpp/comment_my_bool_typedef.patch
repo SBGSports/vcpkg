@@ -1,0 +1,13 @@
+diff --git a/include/mariadb++/types.hpp b/include/mariadb++/types.hpp
+index 2abe393..e42924a 100644
+--- a/include/mariadb++/types.hpp
++++ b/include/mariadb++/types.hpp
+@@ -80,7 +80,7 @@ namespace mariadb {
+ 
+ #if !defined(MARIADB_BASE_VERSION) && MYSQL_VERSION_ID >  80000
+ // Assume MySQL Community 8.0+
+-typedef bool my_bool;
++// typedef bool my_bool;
+ #endif
+ 
+ #endif

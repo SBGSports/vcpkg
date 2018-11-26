@@ -1,0 +1,20 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9e57146..79a4d13 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -44,10 +44,10 @@ SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Nobody")
+ INCLUDE(CPack)
+ 
+ # tests
+-add_subdirectory(test)
++#add_subdirectory(test)
+ 
+ # doxygen
+-include(Doxygen)
+-if (DOXYGEN_FOUND)
+-	setup_doxygen(mariadbpp_doc ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
+-endif()
++#include(Doxygen)
++#if (DOXYGEN_FOUND)
++#	setup_doxygen(mariadbpp_doc ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
++#endif()

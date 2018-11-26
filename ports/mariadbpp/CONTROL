@@ -1,0 +1,4 @@
+Source: mariadbpp
+Version: 3.0.2-1
+Description: C++ client library for MariaDB. Continuation of https://code.launchpad.net/mariadb++
+Build-Depends: libmariadb
