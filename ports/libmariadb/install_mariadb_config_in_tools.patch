@@ -1,0 +1,11 @@
+diff --git a/mariadb_config/CMakeLists.txt b/mariadb_config/CMakeLists.txt
+index d2efcb4..0a800b1 100644
+--- a/mariadb_config/CMakeLists.txt
++++ b/mariadb_config/CMakeLists.txt
+@@ -45,5 +45,5 @@ ADD_EXECUTABLE(mariadb_config ${CMAKE_CURRENT_BINARY_DIR}/mariadb_config.c)
+ # Installation
+ #
+ INSTALL(TARGETS mariadb_config
+-        DESTINATION "bin"
++        DESTINATION "tools"
+         COMPONENT Development)
