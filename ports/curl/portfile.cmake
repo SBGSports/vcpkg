@@ -120,6 +120,11 @@ else()
     endif()
 endif()
 
+if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL Darwin)
+    file(COPY ${CURRENT_PACKAGES_DIR}/lib/libcurl.dylib DESTINATION ${CURRENT_PACKAGES_DIR}/bin)
+    file(COPY ${CURRENT_PACKAGES_DIR}/debug/lib/libcurl-d.dylib DESTINATION ${CURRENT_PACKAGES_DIR}/debug/bin)
+endif()
+
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/lib/pkgconfig ${CURRENT_PACKAGES_DIR}/debug/lib/pkgconfig)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/share)
 
