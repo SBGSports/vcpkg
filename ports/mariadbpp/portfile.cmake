@@ -9,6 +9,7 @@ vcpkg_from_github(
     HEAD_REF master
     PATCHES disable_tests_and_doxygen.patch
             comment_my_bool_typedef.patch
+            build_shared_lib.patch
 )
 
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/FindMariaDBClient.cmake
@@ -16,6 +17,8 @@ file(COPY ${CMAKE_CURRENT_LIST_DIR}/FindMariaDBClient.cmake
 
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
+    OPTIONS
+        -DBUILD_SHARED_LIBS=ON
 )
 
 vcpkg_install_cmake()
