@@ -22,6 +22,8 @@ endif()
 set(ENABLE_SSL "WINDOWS")
 if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
     set(ENABLE_SSL "OPENSSL")
+elseif(VCPKG_CMAKE_SYSTEM_NAME STREQUAL Darwin)
+    set(ENABLE_SSL "DARWIN")
 endif()
 
 vcpkg_configure_cmake(
@@ -53,12 +55,18 @@ file(RENAME ${CURRENT_PACKAGES_DIR}/temp ${CURRENT_PACKAGES_DIR}/include)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 
 if (VCPKG_LIBRARY_LINKAGE STREQUAL static)
+    if (WIN32)
+        set(CMAKE_STATIC_LIBRARY_SUFFIX ".lib")
+    else()
+        set(CMAKE_STATIC_LIBRARY_PREFIX "lib")
+        set(CMAKE_STATIC_LIBRARY_SUFFIX ".a")
+    endif()
     file(RENAME
-        ${CURRENT_PACKAGES_DIR}/lib/mongoc-static-1.0.lib
-        ${CURRENT_PACKAGES_DIR}/lib/mongoc-1.0.lib)
+        ${CURRENT_PACKAGES_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mongoc-static-1.0${CMAKE_STATIC_LIBRARY_SUFFIX}
+        ${CURRENT_PACKAGES_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mongoc-1.0${CMAKE_STATIC_LIBRARY_SUFFIX})
     file(RENAME
-        ${CURRENT_PACKAGES_DIR}/debug/lib/mongoc-static-1.0.lib
-        ${CURRENT_PACKAGES_DIR}/debug/lib/mongoc-1.0.lib)
+        ${CURRENT_PACKAGES_DIR}/debug/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mongoc-static-1.0${CMAKE_STATIC_LIBRARY_SUFFIX}
+        ${CURRENT_PACKAGES_DIR}/debug/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mongoc-1.0${CMAKE_STATIC_LIBRARY_SUFFIX})
 
     # drop the __declspec(dllimport) when building static
     vcpkg_apply_patches(

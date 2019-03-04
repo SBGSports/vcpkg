@@ -79,13 +79,17 @@ diff --git a/src/mongoc/mongoc-handshake.c b/src/mongoc/mongoc-handshake.c
 index 4e181bd..b274fc1 100644
 --- a/src/mongoc/mongoc-handshake.c
 +++ b/src/mongoc/mongoc-handshake.c
-@@ -243,7 +243,8 @@ _get_os_version (void)
-    char *ret = bson_malloc (HANDSHAKE_OS_VERSION_MAX);
+@@ -244,6 +244,13 @@ _get_os_version (void)
     bool found = false;
  
--#ifdef _WIN32
-+#if defined (WINAPI_FAMILY_PARTITION) && !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP | WINAPI_PARTITION_SYSTEM)
-+#elif defined (_WIN32)
+ #ifdef _WIN32
++#  ifndef WINAPI_FAMILY_PARTITION
++#    define HAVE_OSVERSIONINFO
++#  elif WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP | WINAPI_PARTITION_SYSTEM)
++#    define HAVE_OSVERSIONINFO
++#  endif
++#endif
++#ifdef HAVE_OSVERSIONINFO
     OSVERSIONINFO osvi;
     ZeroMemory (&osvi, sizeof (OSVERSIONINFO));
     osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
@@ -93,16 +97,28 @@ diff --git a/src/mongoc/mongoc-util.c b/src/mongoc/mongoc-util.c
 index 6dbb26d..7f33780 100644
 --- a/src/mongoc/mongoc-util.c
 +++ b/src/mongoc/mongoc-util.c
-@@ -69,7 +69,11 @@ _mongoc_hex_md5 (const char *input)
- void
+@@ -70,6 +70,16 @@ _mongoc_hex_md5 (const char *input)
  _mongoc_usleep (int64_t usec)
  {
--#ifdef _WIN32
-+#if defined (WINAPI_FAMILY_PARTITION) && !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP | WINAPI_PARTITION_SYSTEM)
+ #ifdef _WIN32
++#  ifndef WINAPI_FAMILY_PARTITION
++#    define HAVE_SETWAITABLETIMER
++#  elif WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP | WINAPI_PARTITION_SYSTEM)
++#    define HAVE_SETWAITABLETIMER
++#  endif
++#  ifndef HAVE_SETWAITABLETIMER
 +   if (usec / 1000 > MAXDWORD || usec < 0)
 +      __fastfail(-1);
 +   Sleep((DWORD)(usec / 1000));
-+#elif defined(_WIN32)
++#  else
     LARGE_INTEGER ft;
     HANDLE timer;
  
+@@ -80,6 +80,7 @@
+    SetWaitableTimer (timer, &ft, 0, NULL, NULL, 0);
+    WaitForSingleObject (timer, INFINITE);
+    CloseHandle (timer);
++#  endif
+ #else
+    BSON_ASSERT (usec >= 0);
+    usleep ((useconds_t) usec);
