@@ -10,6 +10,7 @@ vcpkg_from_github(
 	 "${CURRENT_PORT_DIR}/disable_shared.patch"
 	 "${CURRENT_PORT_DIR}/fix-uwp.patch"
 	 "${CURRENT_PORT_DIR}/disable-c2338-mongo-cxx-driver.patch"
+	 "${CURRENT_PORT_DIR}/bson.patch"
 )
 
 vcpkg_configure_cmake(
@@ -57,17 +58,20 @@ file(REMOVE_RECURSE
 if (VCPKG_LIBRARY_LINKAGE STREQUAL static)
     file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin)
     file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/bin)
-    file(REMOVE         ${CURRENT_PACKAGES_DIR}/lib/bsoncxx.lib)
-    file(REMOVE         ${CURRENT_PACKAGES_DIR}/debug/lib/bsoncxx.lib)
-    file(REMOVE         ${CURRENT_PACKAGES_DIR}/lib/mongocxx.lib)
-    file(REMOVE         ${CURRENT_PACKAGES_DIR}/debug/lib/mongocxx.lib)
 
-    file(RENAME
-        ${CURRENT_PACKAGES_DIR}/lib/libbsoncxx.lib
-        ${CURRENT_PACKAGES_DIR}/lib/bsoncxx.lib)
-    file(RENAME
-        ${CURRENT_PACKAGES_DIR}/debug/lib/libmongocxx.lib
-        ${CURRENT_PACKAGES_DIR}/debug/lib/mongocxx.lib)
+    if (WIN32)
+        file(REMOVE         ${CURRENT_PACKAGES_DIR}/lib/bsoncxx.lib)
+        file(REMOVE         ${CURRENT_PACKAGES_DIR}/debug/lib/bsoncxx.lib)
+        file(REMOVE         ${CURRENT_PACKAGES_DIR}/lib/mongocxx.lib)
+        file(REMOVE         ${CURRENT_PACKAGES_DIR}/debug/lib/mongocxx.lib)
+
+        file(RENAME
+            ${CURRENT_PACKAGES_DIR}/lib/libbsoncxx.lib
+            ${CURRENT_PACKAGES_DIR}/lib/bsoncxx.lib)
+        file(RENAME
+            ${CURRENT_PACKAGES_DIR}/debug/lib/libmongocxx.lib
+            ${CURRENT_PACKAGES_DIR}/debug/lib/mongocxx.lib)
+    endif()
 
     # define MONGOCXX_STATIC in config/export.hpp
     vcpkg_apply_patches(
@@ -76,10 +80,12 @@ if (VCPKG_LIBRARY_LINKAGE STREQUAL static)
             ${CMAKE_CURRENT_LIST_DIR}/static.patch
     )
 else()
-    file(REMOVE         ${CURRENT_PACKAGES_DIR}/lib/libbsoncxx.lib)
-    file(REMOVE         ${CURRENT_PACKAGES_DIR}/debug/lib/libbsoncxx.lib)
-    file(REMOVE         ${CURRENT_PACKAGES_DIR}/lib/libmongocxx.lib)
-    file(REMOVE         ${CURRENT_PACKAGES_DIR}/debug/lib/libmongocxx.lib)
+    if (WIN32)
+        file(REMOVE         ${CURRENT_PACKAGES_DIR}/lib/libbsoncxx.lib)
+        file(REMOVE         ${CURRENT_PACKAGES_DIR}/debug/lib/libbsoncxx.lib)
+        file(REMOVE         ${CURRENT_PACKAGES_DIR}/lib/libmongocxx.lib)
+        file(REMOVE         ${CURRENT_PACKAGES_DIR}/debug/lib/libmongocxx.lib)
+    endif()
 endif()
 
 file(INSTALL ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/mongo-cxx-driver RENAME copyright)
