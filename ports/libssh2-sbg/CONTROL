@@ -1,0 +1,4 @@
+Source: libssh2-sbg
+Version: 1.8.0-4
+Build-Depends: zlib, openssl-sbg
+Description: The SSH library
