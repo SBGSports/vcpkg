@@ -120,6 +120,7 @@ else()
     endif()
 endif()
 
+file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/lib/pkgconfig ${CURRENT_PACKAGES_DIR}/debug/lib/pkgconfig)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/share)
 
