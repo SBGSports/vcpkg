@@ -34,6 +34,12 @@ else()
     endif()
 endif()
 
+if(VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
+    set(BUILD_SHARED_LIBS "ON")
+else()
+    set(BUILD_SHARED_LIBS "OFF")
+endif()
+
 vcpkg_configure_cmake(
     SOURCE_PATH ${CMAKE_CURRENT_LIST_DIR}
     PREFER_NINJA
@@ -55,7 +61,7 @@ foreach(HEADER ${HEADERS})
 endforeach()
 
 file(INSTALL ${RESOLVED_HEADERS} DESTINATION ${CURRENT_PACKAGES_DIR}/include/openssl)
-file(INSTALL ${MASTER_COPY_SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/openssl-unix RENAME copyright)
+file(INSTALL ${MASTER_COPY_SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/openssl-unix-sbg RENAME copyright)
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
     file(COPY ${CMAKE_CURRENT_LIST_DIR}/vcpkg-cmake-wrapper.cmake DESTINATION ${CURRENT_PACKAGES_DIR}/share/openssl)
