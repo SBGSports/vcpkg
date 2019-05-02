@@ -16,7 +16,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     if (${IOS_PLATFORM} STREQUAL "OS")
         set(PLATFORM ios64-cross)
-    else 
+    else() 
         set(PLATFORM darwin64-x86_64-cc)
     endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
