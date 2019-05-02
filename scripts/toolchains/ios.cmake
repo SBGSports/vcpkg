@@ -71,7 +71,7 @@ set (CMAKE_CXX_OSX_CURRENT_VERSION_FLAG "${CMAKE_C_OSX_CURRENT_VERSION_FLAG}")
 # Hidden visibilty is required for cxx on iOS
 set (CMAKE_MIN_IOS "9.0" CACHE STRING "9.0")
 set (CMAKE_C_FLAGS_INIT "-miphoneos-version-min=${CMAKE_MIN_IOS}")
-set (CMAKE_CXX_FLAGS_INIT "-fembed-bitcode -fvisibility=hidden -fvisibility-inlines-hidden -isysroot ${CMAKE_OSX_SYSROOT} -miphoneos-version-min=${CMAKE_MIN_IOS}")
+set (CMAKE_CXX_FLAGS_INIT "-fembed-bitcode -fvisibility=hidden -fvisibility-inlines-hidden -miphoneos-version-min=${CMAKE_MIN_IOS}")
 
 set (CMAKE_C_LINK_FLAGS "-Wl,-search_paths_first ${CMAKE_C_LINK_FLAGS}")
 set (CMAKE_CXX_LINK_FLAGS "-Wl,-search_paths_first ${CMAKE_CXX_LINK_FLAGS}")
@@ -140,7 +140,9 @@ set (CMAKE_IOS_SDK_ROOT ${CMAKE_IOS_SDK_ROOT} CACHE PATH "Location of the select
 
 # Set the sysroot default to the most recent SDK
 set (CMAKE_OSX_SYSROOT ${CMAKE_IOS_SDK_ROOT} CACHE PATH "Sysroot used for iOS support")
-
+set (CMAKE_C_FLAGS_INIT "${CMAKE_C_FLAGS_INIT} -isysroot ${CMAKE_OSX_SYSROOT}")
+set (CMAKE_CXX_FLAGS_INIT "${CMAKE_CXX_FLAGS_INIT} -isysroot ${CMAKE_OSX_SYSROOT}")
+set (CMAKE_SYSROOT ${CMAKE_IOS_SDK_ROOT} CACHE PATH "Sysroot used for iOS support")
 # set the architecture for iOS 
 # NOTE: Currently both ARCHS_STANDARD_32_BIT and ARCHS_UNIVERSAL_IPHONE_OS set armv7 only, so set both manually
 if (${IOS_PLATFORM} STREQUAL "OS")
