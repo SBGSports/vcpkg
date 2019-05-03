@@ -167,6 +167,9 @@ set (CMAKE_SYSTEM_FRAMEWORK_PATH
 	${CMAKE_IOS_SDK_ROOT}/Developer/Library/Frameworks
 )
 
+# added due to Ateempting to use @rpath without setting CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG
+set(CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG "-Wl,-rpath,")
+
 # only search the iOS sdks, not the remainder of the host filesystem
 set (CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY)
 set (CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
