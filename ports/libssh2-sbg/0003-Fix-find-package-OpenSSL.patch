@@ -1,0 +1,13 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 6401acf..fcfabca 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -60,7 +60,7 @@ endif()
+ 
+ if(CRYPTO_BACKEND STREQUAL "OpenSSL" OR NOT CRYPTO_BACKEND)
+ 
+-  find_package(OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT})
++  find_host_package(OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT})
+ 
+   if(OPENSSL_FOUND)
+     set(CRYPTO_BACKEND "OpenSSL")

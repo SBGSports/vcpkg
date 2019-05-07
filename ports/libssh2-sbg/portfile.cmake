@@ -6,7 +6,10 @@ vcpkg_from_github(
     REF libssh2-1.8.2
     SHA512 f676f8c2d1c66cd086ad5a1d328e3eb3a033afd4511577451c5664a4e0c4c1ea006fa1885f332fb2b3842b2eb30456322efdd2abf97c2f148c2be0d53e3e5624
     HEAD_REF master
-    PATCHES "${CMAKE_CURRENT_LIST_DIR}/0002-Fix-ios.patch"
+    PATCHES
+       "${CMAKE_CURRENT_LIST_DIR}/0001-Fix-UWP.patch"
+       "${CMAKE_CURRENT_LIST_DIR}/0002-Fix-ios.patch"
+       "${CMAKE_CURRENT_LIST_DIR}/0003-Fix-find-package-OpenSSL.patch"
 )
 
 vcpkg_configure_cmake(
