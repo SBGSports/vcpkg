@@ -63,6 +63,14 @@ set (CMAKE_SHARED_MODULE_SUFFIX ".so")
 set (CMAKE_MODULE_EXISTS 1)
 set (CMAKE_DL_LIBS "")
 
+# Additional flags for dynamic framework
+set (CMAKE_MODULE_LINKER_FLAGS "-rpath @executable_path/Frameworks -rpath @loader_path/Frameworks")
+set (CMAKE_SHARED_LINKER_FLAGS "-rpath @executable_path/Frameworks -rpath @loader_path/Frameworks")
+# set (CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG 1)
+set (CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG "-Wl,-rpath,")
+set (CMAKE_INSTALL_NAME_DIR "@rpath")
+# set (CMAKE_SHARED_LIBRARY_RPATH_LINK_C_FLAG "-Wl,-rpath=")
+
 set (CMAKE_C_OSX_COMPATIBILITY_VERSION_FLAG "-compatibility_version ")
 set (CMAKE_C_OSX_CURRENT_VERSION_FLAG "-current_version ")
 set (CMAKE_CXX_OSX_COMPATIBILITY_VERSION_FLAG "${CMAKE_C_OSX_COMPATIBILITY_VERSION_FLAG}")
@@ -146,9 +154,9 @@ set (CMAKE_SYSROOT ${CMAKE_IOS_SDK_ROOT} CACHE PATH "Sysroot used for iOS suppor
 # set the architecture for iOS 
 # NOTE: Currently both ARCHS_STANDARD_32_BIT and ARCHS_UNIVERSAL_IPHONE_OS set armv7 only, so set both manually
 if (${IOS_PLATFORM} STREQUAL "OS")
-	set (IOS_ARCH armv7 arm64)
+	set (IOS_ARCH arm64)
 else (${IOS_PLATFORM} STREQUAL "OS")
-	set (IOS_ARCH i386 x86_64)
+	set (IOS_ARCH x86_64)
 endif (${IOS_PLATFORM} STREQUAL "OS")
 
 set (CMAKE_OSX_ARCHITECTURES ${IOS_ARCH} CACHE string  "Build architecture for iOS")

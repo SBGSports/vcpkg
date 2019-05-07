@@ -64,6 +64,14 @@ set (CMAKE_SHARED_MODULE_SUFFIX ".so")
 set (CMAKE_MODULE_EXISTS 1)
 set (CMAKE_DL_LIBS "")
 
+# Additional flags for dynamic framework
+set (CMAKE_MODULE_LINKER_FLAGS "-rpath @executable_path/Frameworks -rpath @loader_path/Frameworks")
+set (CMAKE_SHARED_LINKER_FLAGS "-rpath @executable_path/Frameworks -rpath @loader_path/Frameworks")
+# set (CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG 1)
+set (CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG "-Wl,-rpath,")
+set (CMAKE_INSTALL_NAME_DIR "@rpath")
+# set (CMAKE_SHARED_LIBRARY_RPATH_LINK_C_FLAG "-Wl,-rpath=")
+
 set (CMAKE_C_OSX_COMPATIBILITY_VERSION_FLAG "-compatibility_version ")
 set (CMAKE_C_OSX_CURRENT_VERSION_FLAG "-current_version ")
 set (CMAKE_CXX_OSX_COMPATIBILITY_VERSION_FLAG "${CMAKE_C_OSX_COMPATIBILITY_VERSION_FLAG}")
