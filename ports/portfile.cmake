@@ -3,15 +3,14 @@ include(vcpkg_common_functions)
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO curl/curl
-    REF curl-7_61_1
-    SHA512 09fa3c87f8d516eabe3241247a5094c32ee0481961cf85bf78ecb13acdf23bb2ec82f113d2660271d22742c79e76d73fb122730fa28e34c7f5477c05a4a6534c
+    REF curl-7_64_0
+    SHA512 19ac571d254d6085fde69bfeddfb497b313bcfd113c0a055aecfd56761a45faea92f2e7bd4539d3c35a934ed939e397efb56aa8a4e04ba99663d84fc0db92d16
     HEAD_REF master
     PATCHES
         ${CMAKE_CURRENT_LIST_DIR}/0001_cmake.patch
         ${CMAKE_CURRENT_LIST_DIR}/0002_fix_uwp.patch
         ${CMAKE_CURRENT_LIST_DIR}/0003_fix_libraries.patch
         ${CMAKE_CURRENT_LIST_DIR}/0004_nghttp2_staticlib.patch
-        ${CMAKE_CURRENT_LIST_DIR}/0005_cmakelist.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" CURL_STATICLIB)
@@ -96,7 +95,7 @@ elseif(EXISTS ${CURRENT_PACKAGES_DIR}/share/curl)
     vcpkg_fixup_cmake_targets(CONFIG_PATH share/curl)
 endif()
 
-file(INSTALL ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/curl RENAME copyright)
+file(INSTALL ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/curl-sbg RENAME copyright)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 
 if(EXISTS "${CURRENT_PACKAGES_DIR}/bin/curl.exe")
@@ -121,12 +120,8 @@ else()
     endif()
 endif()
 
-if(VCPKG_CMAKE_SYSTEM_NAME STREQUAL Darwin)
-    file(COPY ${CURRENT_PACKAGES_DIR}/lib/libcurl.dylib DESTINATION ${CURRENT_PACKAGES_DIR}/bin)
-    file(COPY ${CURRENT_PACKAGES_DIR}/debug/lib/libcurl-d.dylib DESTINATION ${CURRENT_PACKAGES_DIR}/debug/bin)
-endif()
-
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/lib/pkgconfig ${CURRENT_PACKAGES_DIR}/debug/lib/pkgconfig)
+file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/lib/pkgconfig)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/share)
 
 file(READ ${CURRENT_PACKAGES_DIR}/include/curl/curl.h CURL_H)

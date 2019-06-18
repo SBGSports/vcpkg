@@ -1,0 +1,24 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index edb1cec21..f17d5323d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -82,6 +82,10 @@ if(WIN32)
+   option(ENABLE_INET_PTON "Set to OFF to prevent usage of inet_pton when building against modern SDKs while still requiring compatibility with older Windows versions, such as Windows XP, Windows Server 2003 etc." ON)
+ endif()
+ 
++if(POLICY CMP0068)
++  cmake_policy(SET CMP0068 NEW)  # CMake 3.9+: `RPATH` settings on macOS do not affect `install_name`.
++endif()
++
+ cmake_dependent_option(ENABLE_THREADED_RESOLVER "Set to ON to enable threaded DNS lookup"
+         ON "NOT ENABLE_ARES"
+         OFF)
+@@ -346,7 +350,7 @@ if(CMAKE_USE_DARWINSSL)
+ endif()
+ 
+ if(CMAKE_USE_OPENSSL)
+-  find_package(OpenSSL REQUIRED)
++  find_host_package(OpenSSL REQUIRED)
+   set(SSL_ENABLED ON)
+   set(USE_OPENSSL ON)
+   set(HAVE_LIBCRYPTO ON)

@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index edb1cec21..92e13fb00 100644
+index edb1cec21..8648dc21a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -82,6 +82,10 @@ if(WIN32)
@@ -13,4 +13,236 @@ index edb1cec21..92e13fb00 100644
  cmake_dependent_option(ENABLE_THREADED_RESOLVER "Set to ON to enable threaded DNS lookup"
          ON "NOT ENABLE_ARES"
          OFF)
-
+@@ -126,7 +130,7 @@ set(CURL_LIBS "")
+ 
+ if(ENABLE_ARES)
+   set(USE_ARES 1)
+-  find_package(CARES REQUIRED)
++  find_host_package(CARES REQUIRED)
+   list(APPEND CURL_LIBS ${CARES_LIBRARY})
+   set(CURL_LIBS ${CURL_LIBS} ${CARES_LIBRARY})
+ endif()
+@@ -205,7 +209,7 @@ if(ENABLE_IPV6 AND NOT WIN32)
+ endif()
+ 
+ curl_nroff_check()
+-find_package(Perl)
++find_host_package(Perl)
+ 
+ cmake_dependent_option(ENABLE_MANUAL "to provide the built-in manual"
+     ON "NROFF_USEFUL;PERL_FOUND"
+@@ -255,7 +259,7 @@ if(WIN32)
+ endif()
+ 
+ if(ENABLE_THREADED_RESOLVER)
+-  find_package(Threads REQUIRED)
++  find_host_package(Threads REQUIRED)
+   if(WIN32)
+     set(USE_THREADS_WIN32 ON)
+   else()
+@@ -346,7 +350,7 @@ if(CMAKE_USE_DARWINSSL)
+ endif()
+ 
+ if(CMAKE_USE_OPENSSL)
+-  find_package(OpenSSL REQUIRED)
++  find_host_package(OpenSSL REQUIRED)
+   set(SSL_ENABLED ON)
+   set(USE_OPENSSL ON)
+   set(HAVE_LIBCRYPTO ON)
+@@ -376,7 +380,7 @@ if(CMAKE_USE_OPENSSL)
+ endif()
+ 
+ if(CMAKE_USE_MBEDTLS)
+-  find_package(MbedTLS REQUIRED)
++  find_host_package(MbedTLS REQUIRED)
+   set(SSL_ENABLED ON)
+   set(USE_MBEDTLS ON)
+   list(APPEND CURL_LIBS ${MBEDTLS_LIBRARIES})
+@@ -385,9 +389,12 @@ endif()
+ 
+ option(USE_NGHTTP2 "Use Nghttp2 library" OFF)
+ if(USE_NGHTTP2)
+-  find_package(NGHTTP2 REQUIRED)
++  find_host_package(NGHTTP2 REQUIRED)
+   include_directories(${NGHTTP2_INCLUDE_DIRS})
+   list(APPEND CURL_LIBS ${NGHTTP2_LIBRARIES})
++  if(NOT BUILD_SHARED_LIBS)
++    add_definitions(-DNGHTTP2_STATICLIB)
++  endif()
+ endif()
+ 
+ if(NOT CURL_DISABLE_LDAP)
+@@ -499,7 +506,7 @@ if(NOT CURL_DISABLE_LDAPS)
+ endif()
+ 
+ # Check for idn
+-check_library_exists_concat("idn2" idn2_lookup_ul HAVE_LIBIDN2)
++#check_library_exists_concat("idn2" idn2_lookup_ul HAVE_LIBIDN2)
+ 
+ # Check for symbol dlopen (same as HAVE_LIBDL)
+ check_library_exists("${CURL_LIBS}" dlopen "" HAVE_DLOPEN)
+@@ -509,7 +516,7 @@ set(HAVE_LIBZ OFF)
+ set(HAVE_ZLIB_H OFF)
+ set(USE_ZLIB OFF)
+ if(CURL_ZLIB)
+-  find_package(ZLIB QUIET)
++  find_host_package(ZLIB QUIET)
+   if(ZLIB_FOUND)
+     set(HAVE_ZLIB_H ON)
+     set(HAVE_LIBZ ON)
+@@ -531,7 +538,7 @@ endif()
+ option(CURL_BROTLI "Set to ON to enable building curl with brotli support." OFF)
+ set(HAVE_BROTLI OFF)
+ if(CURL_BROTLI)
+-  find_package(BROTLI QUIET)
++  find_host_package(BROTLI QUIET)
+   if(BROTLI_FOUND)
+     set(HAVE_BROTLI ON)
+     list(APPEND CURL_LIBS ${BROTLI_LIBRARIES})
+@@ -548,7 +555,7 @@ set(HAVE_LIBSSH2 OFF)
+ set(HAVE_LIBSSH2_H OFF)
+ 
+ if(CMAKE_USE_LIBSSH2)
+-  find_package(LibSSH2)
++  find_host_package(LibSSH2)
+   if(LIBSSH2_FOUND)
+     list(APPEND CURL_LIBS ${LIBSSH2_LIBRARY})
+     set(CMAKE_REQUIRED_LIBRARIES ${LIBSSH2_LIBRARY})
+@@ -557,7 +564,7 @@ if(CMAKE_USE_LIBSSH2)
+     set(HAVE_LIBSSH2 ON)
+     set(USE_LIBSSH2 ON)
+ 
+-    # find_package has already found the headers
++    # find_host_package has already found the headers
+     set(HAVE_LIBSSH2_H ON)
+     set(CURL_INCLUDES ${CURL_INCLUDES} "${LIBSSH2_INCLUDE_DIR}/libssh2.h")
+     set(CURL_TEST_DEFINES "${CURL_TEST_DEFINES} -DHAVE_LIBSSH2_H")
+@@ -577,7 +584,7 @@ option(CMAKE_USE_GSSAPI "Use GSSAPI implementation (right now only Heimdal is su
+ mark_as_advanced(CMAKE_USE_GSSAPI)
+ 
+ if(CMAKE_USE_GSSAPI)
+-  find_package(GSS)
++  find_host_package(GSS)
+ 
+   set(HAVE_GSSAPI ${GSS_FOUND})
+   if(GSS_FOUND)
+@@ -748,7 +755,7 @@ check_include_file_concat("des.h"            HAVE_DES_H)
+ check_include_file_concat("err.h"            HAVE_ERR_H)
+ check_include_file_concat("errno.h"          HAVE_ERRNO_H)
+ check_include_file_concat("fcntl.h"          HAVE_FCNTL_H)
+-check_include_file_concat("idn2.h"           HAVE_IDN2_H)
++#check_include_file_concat("idn2.h"           HAVE_IDN2_H)
+ check_include_file_concat("ifaddrs.h"        HAVE_IFADDRS_H)
+ check_include_file_concat("io.h"             HAVE_IO_H)
+ check_include_file_concat("krb.h"            HAVE_KRB_H)
+@@ -1187,7 +1194,7 @@ _add_if("IPv6"          ENABLE_IPV6)
+ _add_if("unix-sockets"  USE_UNIX_SOCKETS)
+ _add_if("libz"          HAVE_LIBZ)
+ _add_if("AsynchDNS"     USE_ARES OR USE_THREADS_POSIX OR USE_THREADS_WIN32)
+-_add_if("IDN"           HAVE_LIBIDN2)
++#_add_if("IDN"           HAVE_LIBIDN2)
+ _add_if("Largefile"     (CURL_SIZEOF_CURL_OFF_T GREATER 4) AND
+                         ((SIZEOF_OFF_T GREATER 4) OR USE_WIN32_LARGE_FILES))
+ # TODO SSP1 (WinSSL) check is missing
+@@ -1243,10 +1250,12 @@ list(SORT _items)
+ string(REPLACE ";" " " SUPPORT_PROTOCOLS "${_items}")
+ message(STATUS "Enabled protocols: ${SUPPORT_PROTOCOLS}")
+ 
++set(USE_LIBIDN2 OFF)
++
+ # curl-config needs the following options to be set.
+ set(CC                      "${CMAKE_C_COMPILER}")
+ # TODO probably put a -D... options here?
+-set(CONFIGURE_OPTIONS       "")
++set(CONFIGURE_OPTIONS       "--without-libidn2")
+ # TODO when to set "-DCURL_STATICLIB" for CPPFLAG_CURL_STATICLIB?
+ set(CPPFLAG_CURL_STATICLIB  "")
+ set(CURLVERSION             "${CURL_VERSION}")
+@@ -1292,7 +1301,7 @@ install(FILES "${CURL_BINARY_DIR}/curl-config"
+           WORLD_READ WORLD_EXECUTE)
+ 
+ # Finally generate a pkg-config file matching this config
+-configure_file("${CURL_SOURCE_DIR}/libcurl.pc.in"
++configure_file("${CURL_SOURCE_DIR}/libcurl.pc.in"curl
+                "${CURL_BINARY_DIR}/libcurl.pc" @ONLY)
+ install(FILES "${CURL_BINARY_DIR}/libcurl.pc"
+         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+diff --git a/configure.ac b/configure.ac
+index e9f0ef75b..07458d3d9 100755
+--- a/configure.ac
++++ b/configure.ac
+@@ -23,6 +23,7 @@ dnl Process this file with autoconf to produce a configure script.
+ 
+ AC_PREREQ(2.57)
+ 
++blahoaifjdfoaidjf
+ dnl We don't know the version number "statically" so we use a dash here
+ AC_INIT([curl], [-], [a suitable curl mailing list: https://curl.haxx.se/mail/])
+ 
+diff --git a/lib/Makefile.m32 b/lib/Makefile.m32
+index ae88f4dce..3daae5333 100644
+--- a/lib/Makefile.m32
++++ b/lib/Makefile.m32
+@@ -298,11 +298,6 @@ ifdef BROTLI
+     DLL_LIBS += -lbrotlidec
+   endif
+ endif
+-ifdef IDN2
+-  INCLUDES += -I"$(LIBIDN2_PATH)/include"
+-  CFLAGS += -DUSE_LIBIDN2
+-  DLL_LIBS += -L"$(LIBIDN2_PATH)/lib" -lidn2
+-else
+ ifdef WINIDN
+   CFLAGS += -DUSE_WIN32_IDN
+   CFLAGS += -DWANT_IDN_PROTOTYPES
+diff --git a/lib/curl_config.h.cmake b/lib/curl_config.h.cmake
+index 5308eb579..fa4428360 100644
+--- a/lib/curl_config.h.cmake
++++ b/lib/curl_config.h.cmake
+@@ -277,14 +277,19 @@
+ /* if you have the MIT gssapi libraries */
+ #cmakedefine HAVE_GSSMIT 1
+ 
++/* force undefine of IDN2  
++#undef USE_LIBIDN2 
++#undef HAVE_LIBIDN2
++#undef HAVE_IDN2_H
++
+ /* Define to 1 if you have the `idna_strerror' function. */
+-#cmakedefine HAVE_IDNA_STRERROR 1
++//#cmakedefine HAVE_IDNA_STRERROR 1
+ 
+ /* Define to 1 if you have the `idn_free' function. */
+-#cmakedefine HAVE_IDN_FREE 1
++//#cmakedefine HAVE_IDN_FREE 1
+ 
+ /* Define to 1 if you have the <idn-free.h> header file. */
+-#cmakedefine HAVE_IDN_FREE_H 1
++//#cmakedefine HAVE_IDN_FREE_H 1
+ 
+ /* Define to 1 if you have the <ifaddrs.h> header file. */
+ #cmakedefine HAVE_IFADDRS_H 1
+@@ -366,7 +371,7 @@
+ #cmakedefine HAVE_LIBGEN_H 1
+ 
+ /* Define to 1 if you have the `idn' library (-lidn). */
+-#cmakedefine HAVE_LIBIDN 1
++//#cmakedefine HAVE_LIBIDN 1
+ 
+ /* Define to 1 if you have the `resolv' library (-lresolv). */
+ #cmakedefine HAVE_LIBRESOLV 1
+diff --git a/src/Makefile.m32 b/src/Makefile.m32
+index e13db04b9..a639843dd 100644
+--- a/src/Makefile.m32
++++ b/src/Makefile.m32
+@@ -312,10 +312,6 @@ ifdef BROTLI
+     curl_LDADD += -lbrotlidec
+   endif
+ endif
+-ifdef IDN2
+-  CFLAGS += -DUSE_LIBIDN2
+-  curl_LDADD += -L"$(LIBIDN2_PATH)/lib" -lidn2
+-else
+ ifdef WINIDN
+   CFLAGS += -DUSE_WIN32_IDN
+   curl_LDADD += -L"$(WINIDN_PATH)" -lnormaliz
