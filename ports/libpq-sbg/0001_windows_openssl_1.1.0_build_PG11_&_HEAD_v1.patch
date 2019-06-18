@@ -1,0 +1,131 @@
+diff --git a/src/tools/msvc/Project.pm b/src/tools/msvc/Project.pm
+index 0d35546..291ca86 100644
+--- a/src/tools/msvc/Project.pm
++++ b/src/tools/msvc/Project.pm
+@@ -130,17 +130,19 @@ sub AddReference
+ 
+ sub AddLibrary
+ {
+-	my ($self, $lib, $dbgsuffix) = @_;
++	my ($self, $lib, $slib) = @_;
++	my $libcfg = "MD";
++	my $xlib = defined $slib ? $slib : '';
+ 
+-	if ($lib =~ m/\s/)
++	$xlib =~ s/\.lib$/$libcfg.lib/;
++	if ($xlib eq '' || ! -e $xlib)
+ 	{
+-		$lib = '&quot;' . $lib . "&quot;";
++		push @{ $self->{libraries} }, $lib;
+ 	}
+-
+-	push @{ $self->{libraries} }, $lib;
+-	if ($dbgsuffix)
++	else
+ 	{
+-		push @{ $self->{suffixlib} }, $lib;
++		push @{ $self->{libraries} }, $slib;
++		push @{ $self->{suffixlib} }, $slib;
+ 	}
+ 	return;
+ }
+diff --git a/src/tools/msvc/Solution.pm b/src/tools/msvc/Solution.pm
+index 78db247..6560ba0 100644
+--- a/src/tools/msvc/Solution.pm
++++ b/src/tools/msvc/Solution.pm
+@@ -174,7 +174,19 @@ sub GenerateFiles
+ 		  if ($self->{options}->{asserts});
+ 		print $o "#define USE_LDAP 1\n"    if ($self->{options}->{ldap});
+ 		print $o "#define HAVE_LIBZ 1\n"   if ($self->{options}->{zlib});
+-		print $o "#define USE_OPENSSL 1\n" if ($self->{options}->{openssl});
++		if ($self->{options}->{openssl})
++		{
++			print $o "#define USE_OPENSSL 1\n";
++			# We need to know if we are using version 1.1.0 or above
++			my ($major, $minor) = $self->GetOpenSSLVersion();
++			if ($major == 1 && $minor == 1)
++			{
++				print $o "#define HAVE_BIO_GET_DATA 1\n";
++				print $o "#define HAVE_BIO_METH_NEW 1\n";
++				print $o "#define HAVE_OPENSSL_INIT_SSL 1\n";
++				print $o "#define HAVE_ASN1_STRING_GET0_DATA 1\n";
++			}
++		}
+ 		print $o "#define ENABLE_NLS 1\n"  if ($self->{options}->{nls});
+ 
+ 		print $o "#define BLCKSZ ", 1024 * $self->{options}->{blocksize},
+@@ -579,21 +591,39 @@ sub AddProject
+ 	if ($self->{options}->{openssl})
+ 	{
+ 		$proj->AddIncludeDir($self->{options}->{openssl} . '\include');
+-		if (-e "$self->{options}->{openssl}/lib/VC/ssleay32MD.lib")
++		my ($major, $minor) = $self->GetOpenSSLVersion();
++		if ($major == 1 && $minor == 1)
+ 		{
+-			$proj->AddLibrary(
+-				$self->{options}->{openssl} . '\lib\VC\ssleay32.lib', 1);
+-			$proj->AddLibrary(
+-				$self->{options}->{openssl} . '\lib\VC\libeay32.lib', 1);
++			# Starting at version 1.1.0 OpenSSL have changed their library names from:
++			#     libeay to libcrypto
++			#     ssleay to libssl
++			if ($self->{platform} eq 'Win32')
++			{
++				$proj->AddLibrary(
++					$self->{options}->{openssl} . '\lib\libssl.lib',
++					$self->{options}->{openssl} . '\lib\VC\libssl32.lib');
++				$proj->AddLibrary(
++					$self->{options}->{openssl} . '\lib\libcrypto.lib',
++					$self->{options}->{openssl} . '\lib\VC\libcrypto32.lib');
++			}
++			else
++			{
++				$proj->AddLibrary(
++					$self->{options}->{openssl} . '\lib\libssl.lib',
++					$self->{options}->{openssl} . '\lib\VC\libssl64.lib');
++				$proj->AddLibrary(
++					$self->{options}->{openssl} . '\lib\libcrypto.lib',
++					$self->{options}->{openssl} . '\lib\VC\libcrypto64.lib');
++			}
+ 		}
+ 		else
+ 		{
+-			# We don't expect the config-specific library to be here,
+-			# so don't ask for it in last parameter
+ 			$proj->AddLibrary(
+-				$self->{options}->{openssl} . '\lib\ssleay32.lib', 0);
++				$self->{options}->{openssl} . '\lib\ssleay32.lib',
++				$self->{options}->{openssl} . '\lib\VC\ssleay32.lib');
+ 			$proj->AddLibrary(
+-				$self->{options}->{openssl} . '\lib\libeay32.lib', 0);
++				$self->{options}->{openssl} . '\lib\libeay32.lib',
++				$self->{options}->{openssl} . '\lib\VC\libeay32.lib');
+ 		}
+ 	}
+ 	if ($self->{options}->{nls})
+@@ -955,4 +985,25 @@ MinimumVisualStudioVersion = $self->{MinimumVisualStudioVersion}
+ |;
+ }
+ 
++sub GetOpenSSLVersion
++{
++	my $self = shift;
++
++	# Attempt to get OpenSSL version and location.
++	# Assume openssl.exe in specified dir.
++	my $opensslprog = '\bin\openssl.exe version 2>&1';
++	my $opensslcmd = '"' . $self->{options}->{openssl} . '"' . $opensslprog;
++	my $sslout = `$opensslcmd`;
++	die "Unable to determine OpenSSL: The openssl.exe command was not found." if $?;
++
++	if ($sslout =~ /(\d+)\.(\d+)\.(\d+)/m)
++	{
++		return ($1, $2)
++	}
++	else
++	{
++		die "Unable to determine OpenSSL version: The openssl.exe version could not be determined.";
++	}
++}
++
+ 1;
