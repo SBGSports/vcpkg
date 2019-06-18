@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(libpqxx VERSION 6.0.0 LANGUAGES CXX)
+project(libpqxx VERSION 6.4.4 LANGUAGES CXX)
 
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_CXX_STANDARD 14)
@@ -18,11 +18,9 @@ check_include_file_cxx(sys/types.h HAVE_SYS_TYPES_H)
 check_include_file_cxx(unistd.h HAVE_UNISTD_H)
 
 include(CheckCXXSourceCompiles)
-include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
 
-#check_cxx_source_compiles("[[deprecated]] void f();
-#int main() { return 0; }" PQXX_HAVE_DEPRECATED)
+check_cxx_source_compiles("[[deprecated]] void f();
+int main() { return 0; }" PQXX_HAVE_DEPRECATED)
 check_cxx_source_compiles("#include <optional>
 int main() { return std::optional<int>(0).value(); }" PQXX_HAVE_OPTIONAL)
 check_cxx_source_compiles("#include <experimental/optional>
