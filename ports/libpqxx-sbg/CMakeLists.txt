@@ -32,18 +32,36 @@ configure_file(config-public-compiler.h.in pqxx/config-public-compiler.h)
 file(GLOB SRCS "${PROJECT_SOURCE_DIR}/src/*.cxx")
 
 if(BUILD_SHARED_LIBS)
-    set(TARGET libpqxx)
+    
+    if(WIN32)
+        set(TARGET libpqxx)
+        list(APPEND SRCS "${PROJECT_SOURCE_DIR}/win32/libpqxx.cxx")
+    else()
+        set(TARGET pqxx)
+    endif()
+    
     set(SHARED_DEFINITION -DPQXX_SHARED)
-    list(APPEND SRCS "${PROJECT_SOURCE_DIR}/win32/libpqxx.cxx")
+
 else()
     set(TARGET libpqxx_static)
+
+    if(WIN32)
+        set(TARGET libpqxx_static)
+    else()
+        set(TARGET pqxx_static)
+    endif()
     set(SHARED_DEFINITION "")
+
 endif()
 
 add_library(${TARGET} ${SRCS})
 target_compile_definitions(${TARGET} PRIVATE -DPQXX_INTERNAL -DNOMINMAX ${SHARED_DEFINITION})
 target_include_directories(${TARGET} PRIVATE include ${LIBPQ_FE_H} ${POSTGRES_EXT_H} ${CMAKE_BINARY_DIR})
-target_link_libraries(${TARGET} PRIVATE ws2_32)
+
+if(WIN32)
+    target_link_libraries(${TARGET} PRIVATE ws2_32)
+endif()
+
 if(LIBPQD AND LIBPQ)
     target_link_libraries(${TARGET} PRIVATE debug ${LIBPQD} optimized ${LIBPQ})
 elseif(LIBPQD)
