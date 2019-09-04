@@ -8,7 +8,7 @@ vcpkg_from_github(OUT_SOURCE_PATH SOURCE_PATH
 vcpkg_apply_patches(
     SOURCE_PATH ${SOURCE_PATH}
     PATCHES
-    ${CMAKE_CURRENT_LIST_DIR}/0001-Find-external-sqlite3.patch)
+    ${CMAKE_CURRENT_LIST_DIR}/0001-Find-external-sqlite3_and_add_def.patch)
 
 if (VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
     message(STATUS "Warning: Dynamic building not supported yet. Building static.")
@@ -23,6 +23,7 @@ vcpkg_configure_cmake(
         -DSQLITECPP_RUN_CPPCHECK=OFF
         -DSQLITECPP_INTERNAL_SQLITE=OFF
         -DSQLITE_ENABLE_COLUMN_METADATA=OFF
+        -DSQLITE_OMIT_LOAD_EXTENSION=ON
 )
 
 vcpkg_install_cmake()

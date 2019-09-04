@@ -9,6 +9,8 @@ else()
 endif()
 add_library(sqlite3 sqlite3.c)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fms-extensions")
+
 target_compile_definitions(
     sqlite3
     PRIVATE
@@ -17,6 +19,7 @@ target_compile_definitions(
         -DSQLITE_ENABLE_RTREE
         -DSQLITE_ENABLE_UNLOCK_NOTIFY
         -DSQLITE_ENABLE_COLUMN_METADATA
+        -DSQLITE_OMIT_LOAD_EXTENSION
 )
 target_include_directories(sqlite3 INTERFACE $<INSTALL_INTERFACE:include>)
 if(NOT WIN32)
