@@ -132,4 +132,5 @@ then
 	done
 fi
 
+rm $SOURCE
 echo Done
