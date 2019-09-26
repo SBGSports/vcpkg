@@ -14,10 +14,10 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
         set(PLATFORM linux-generic32)
     endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    if (${IOS_PLATFORM} STREQUAL "OS")
-        set(PLATFORM ios64-cross)
-    else() 
+    if(NOT DEFINED IOS_PLATFORM)
         set(PLATFORM darwin64-x86_64-cc)
+    else()
+        set(PLATFORM ios64-cross)
     endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
     set(PLATFORM BSD-generic64)
@@ -134,27 +134,46 @@ add_custom_target(build_libs ALL
     DEPENDS depend
     BYPRODUCTS "${BUILDDIR}/libssl.a" "${BUILDDIR}/libcrypto.a"
 )
-if(BUILD_SHARED_LIBS AND APPLE)
-    set(SHARED_LIB_CRYPTO libcrypto.1.1.dylib)
-    set(SHARED_LIB_SSL libssl.1.1.dylib)
-    add_custom_command(TARGET build_libs
-        POST_BUILD
-        COMMAND ${CMAKE_INSTALL_NAME_TOOL} -id "@rpath/${SHARED_LIB_CRYPTO}" "${BUILDDIR}/${SHARED_LIB_CRYPTO}"
-        COMMAND ${CMAKE_INSTALL_NAME_TOOL} -id "@rpath/${SHARED_LIB_SSL}" "${BUILDDIR}/${SHARED_LIB_SSL}"
-        COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change "${CMAKE_INSTALL_PREFIX}/lib/${SHARED_LIB_CRYPTO}" "@rpath/${SHARED_LIB_CRYPTO}" "${BUILDDIR}/${SHARED_LIB_SSL}"
-    )
-endif()
+if(BUILD_SHARED_LIBS AND APPLE)
+
+    set(SHARED_LIB_CRYPTO libcrypto.1.1.dylib)
+
+    set(SHARED_LIB_SSL libssl.1.1.dylib)
+
+    add_custom_command(TARGET build_libs
+
+        POST_BUILD
+
+        COMMAND ${CMAKE_INSTALL_NAME_TOOL} -id "@rpath/${SHARED_LIB_CRYPTO}" "${BUILDDIR}/${SHARED_LIB_CRYPTO}"
+
+        COMMAND ${CMAKE_INSTALL_NAME_TOOL} -id "@rpath/${SHARED_LIB_SSL}" "${BUILDDIR}/${SHARED_LIB_SSL}"
+
+        COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change "${CMAKE_INSTALL_PREFIX}/lib/${SHARED_LIB_CRYPTO}" "@rpath/${SHARED_LIB_CRYPTO}" "${BUILDDIR}/${SHARED_LIB_SSL}"
+
+    )
+
+endif()
+
 
 install(
     FILES "${BUILDDIR}/libssl.a" "${BUILDDIR}/libcrypto.a"
     DESTINATION lib
 )
-if(BUILD_SHARED_LIBS AND APPLE)
-    set(SHARED_LIBS ${SHARED_LIB_CRYPTO} libcrypto.dylib ${SHARED_LIB_SSL} libssl.dylib)
-    foreach(LIBNAME ${SHARED_LIBS})
-        install(
-            FILES ${BUILDDIR}/${LIBNAME}
-            DESTINATION lib
-        )
-    endforeach()
-endif()
+if(BUILD_SHARED_LIBS AND APPLE)
+
+    set(SHARED_LIBS ${SHARED_LIB_CRYPTO} libcrypto.dylib ${SHARED_LIB_SSL} libssl.dylib)
+
+    foreach(LIBNAME ${SHARED_LIBS})
+
+        install(
+
+            FILES ${BUILDDIR}/${LIBNAME}
+
+            DESTINATION lib
+
+        )
+
+    endforeach()
+
+endif()
+

@@ -34,6 +34,7 @@ set (CMAKE_SYSTEM_VERSION 1)
 set (UNIX True)
 set (APPLE True)
 set (IOS True)
+set (IOS_PLATFORM "OS")
 
 # Required as of cmake 2.8.10
 set (CMAKE_OSX_DEPLOYMENT_TARGET "" CACHE STRING "Force unset of the deployment target for iOS" FORCE)
@@ -44,6 +45,9 @@ if (CMAKE_UNAME)
 	exec_program(uname ARGS -r OUTPUT_VARIABLE CMAKE_HOST_SYSTEM_VERSION)
 	string (REGEX REPLACE "^([0-9]+)\\.([0-9]+).*$" "\\1" DARWIN_MAJOR_VERSION "${CMAKE_HOST_SYSTEM_VERSION}")
 endif (CMAKE_UNAME)
+
+# Set c++11
+set (CMAKE_CXX_STANDARD 11)
 
 # Force the compilers to gcc for iOS
 include (CMakeForceCompiler)
@@ -79,7 +83,7 @@ set (CMAKE_CXX_OSX_CURRENT_VERSION_FLAG "${CMAKE_C_OSX_CURRENT_VERSION_FLAG}")
 # Hidden visibilty is required for cxx on iOS
 set (CMAKE_MIN_IOS "9.0" CACHE STRING "9.0")
 set (CMAKE_C_FLAGS_INIT "-miphoneos-version-min=${CMAKE_MIN_IOS}")
-set (CMAKE_CXX_FLAGS_INIT "-fembed-bitcode -fvisibility=hidden -fvisibility-inlines-hidden -miphoneos-version-min=${CMAKE_MIN_IOS}")
+set (CMAKE_CXX_FLAGS_INIT "-fvisibility=hidden -fvisibility-inlines-hidden -miphoneos-version-min=${CMAKE_MIN_IOS}")
 
 set (CMAKE_C_LINK_FLAGS "-Wl,-search_paths_first ${CMAKE_C_LINK_FLAGS}")
 set (CMAKE_CXX_LINK_FLAGS "-Wl,-search_paths_first ${CMAKE_CXX_LINK_FLAGS}")
@@ -173,6 +177,9 @@ set (CMAKE_SYSTEM_FRAMEWORK_PATH
 	${CMAKE_IOS_SDK_ROOT}/System/Library/PrivateFrameworks
 	${CMAKE_IOS_SDK_ROOT}/Developer/Library/Frameworks
 )
+
+# added due to Ateempting to use @rpath without setting CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG
+set(CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG)
 
 # only search the iOS sdks, not the remainder of the host filesystem
 set (CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY)
