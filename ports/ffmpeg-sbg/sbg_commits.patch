@@ -1,0 +1,80 @@
+diff --git a/configure b/configure
+index 23823e3b70..06361b9cfd 100755
+--- a/configure
++++ b/configure
+@@ -1506,7 +1506,6 @@ EXTERNAL_LIBRARY_GPL_LIST="
+     libcdio
+     librubberband
+     libvidstab
+-    libx264
+     libx265
+     libxavs
+     libxvid
+@@ -1581,6 +1580,7 @@ EXTERNAL_LIBRARY_LIST="
+     libvpx
+     libwavpack
+     libwebp
++    libx264
+     libzimg
+     libzmq
+     libzvbi
+diff --git a/libavcodec/nvenc.c b/libavcodec/nvenc.c
+index b7957867d7..fd2a1a087b 100644
+--- a/libavcodec/nvenc.c
++++ b/libavcodec/nvenc.c
+@@ -1262,6 +1262,11 @@ av_cold int ff_nvenc_encode_close(AVCodecContext *avctx)
+     CUcontext dummy;
+     int i;
+ 
++    if (!dl_fn->cuda_dl) {
++        av_log(avctx, AV_LOG_VERBOSE, "CUDA functions not loaded so assuming nothing to close\n");
++        return 0;
++    }
++
+     cu_res = dl_fn->cuda_dl->cuCtxPushCurrent(ctx->cu_context);
+     if (cu_res != CUDA_SUCCESS) {
+         av_log(avctx, AV_LOG_ERROR, "cuCtxPushCurrent failed\n");
+diff --git a/libavformat/avio.c b/libavformat/avio.c
+index 1e79c9dd5c..60852bdaac 100644
+--- a/libavformat/avio.c
++++ b/libavformat/avio.c
+@@ -625,6 +625,8 @@ int64_t ffurl_size(URLContext *h)
+ 
+ int ffurl_get_file_handle(URLContext *h)
+ {
++    if (!h)
++        return -1;
+     if (!h->prot->url_get_file_handle)
+         return -1;
+     return h->prot->url_get_file_handle(h);
+diff --git a/libavformat/udp.c b/libavformat/udp.c
+index 3835f989c4..4ae330c9de 100644
+--- a/libavformat/udp.c
++++ b/libavformat/udp.c
+@@ -832,6 +832,10 @@ static int udp_open(URLContext *h, const char *uri, int flags)
+         s->reuse_socket = 1;
+         if (setsockopt (udp_fd, SOL_SOCKET, SO_REUSEADDR, &(s->reuse_socket), sizeof(s->reuse_socket)) != 0)
+             goto fail;
++#ifdef __APPLE__  // MacOS/X requires an additional call
++        if (setsockopt (udp_fd, SOL_SOCKET, SO_REUSEPORT, &(s->reuse_socket), sizeof(s->reuse_socket)) != 0)
++            goto fail;
++#endif
+     }
+ 
+     if (s->is_broadcast) {
+@@ -1140,6 +1144,7 @@ static int udp_close(URLContext *h)
+ 
+     if (s->is_multicast && (h->flags & AVIO_FLAG_READ))
+         udp_leave_multicast_group(s->udp_fd, (struct sockaddr *)&s->dest_addr,(struct sockaddr *)&s->local_addr_storage);
++    closesocket(s->udp_fd);
+ #if HAVE_PTHREAD_CANCEL
+     if (s->thread_started) {
+         int ret;
+@@ -1153,7 +1158,6 @@ static int udp_close(URLContext *h)
+         pthread_cond_destroy(&s->cond);
+     }
+ #endif
+-    closesocket(s->udp_fd);
+     av_fifo_freep(&s->fifo);
+     return 0;
+ }

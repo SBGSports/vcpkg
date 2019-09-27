@@ -94,13 +94,15 @@ then
 		    --prefix="$THIN/$ARCH" \
             CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 
-		make -j3 install
+		make -j4 install
 		cd $CWD
 
 		# change the rpath
-		install_name_tool -id  @executable_path/libmp3lame.0.dylib $THIN/$ARCH/lib/libmp3lame.0.dylib
+		install_name_tool -id  @rpath/libmp3lame.0.dylib $THIN/$ARCH/lib/libmp3lame.0.dylib
 	done
 fi
+
+
 
 rm -r $SCRATCH
 rm -r $LAME_DIR

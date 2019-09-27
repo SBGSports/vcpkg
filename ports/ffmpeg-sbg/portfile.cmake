@@ -13,6 +13,7 @@ vcpkg_extract_source_archive_ex(
         create-lib-libraries.patch
         detect-openssl.patch
         configure_opencv.patch
+        sbg_commits.patch
         fix_windowsinclude-in-ffmpegexe-1.patch
         fix_windowsinclude-in-ffmpegexe-2.patch
         fix_windowsinclude-in-ffmpegexe-3.patch

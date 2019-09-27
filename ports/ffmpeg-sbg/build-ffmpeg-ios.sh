@@ -15,18 +15,19 @@ THIN=`pwd`/"ffmpeg"
 #X264=`pwd`/fat-x264
 #FDK_AAC=`pwd`/../fdk-aac-build-script-for-iOS/fdk-aac-ios
 
-CONFIGURE_FLAGS="--install-name-dir='@executable_path'  --enable-cross-compile --disable-debug --disable-programs \
-                 --disable-doc --enable-pic --enable-shared --disable-static --disable-bzlib --disable-iconv --disable-libopenjpeg --disable-zlib \
-                 --enable-asm --enable-pthreads"
+CONFIGURE_FLAGS="--install-name-dir='@rpath'  --enable-cross-compile --disable-debug --disable-programs \
+                 --disable-doc --enable-pic --disable-static --enable-shared --disable-bzlib --disable-iconv --disable-libopenjpeg --disable-zlib \
+                 --enable-asm --enable-pthreads --enable-openssl"
 
 LAMEMP3=`pwd`/lame
+
 CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-libmp3lame"
+
 
 # avresample
 #CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-avresample"
 
 ARCHS="arm64 x86_64"
-
 COMPILE="y"
 LIPO="y"
 
@@ -78,6 +79,12 @@ then
 			|| exit 1
 	fi
 
+    # apply SBG patch
+	cd $SOURCE
+	patch -p1 < ../sbg_commits.patch
+	patch -p1 < ../find_openssl_configure.patch
+	cd ../
+
 	CWD=`pwd`
 	for ARCH in $ARCHS
 	do
@@ -90,9 +97,11 @@ then
 		then
 		    PLATFORM="iPhoneSimulator"
 		    CFLAGS="$CFLAGS -mios-simulator-version-min=$DEPLOYMENT_TARGET"
+		    OPENSSL=`pwd`/../../../../installed/x64-ios-sim
 		else
 		    PLATFORM="iPhoneOS"
 		    CFLAGS="$CFLAGS -mios-version-min=$DEPLOYMENT_TARGET"
+		    OPENSSL=`pwd`/../../../../installed/arm64-ios
 		    if [ "$ARCH" = "arm64" ]
 		    then
 		        EXPORT="GASPP_FIX_XCODE5=1"
@@ -113,8 +122,8 @@ then
 		CXXFLAGS="$CFLAGS"
 		LDFLAGS="$CFLAGS"
 
-		CFLAGS="$CFLAGS -I$LAMEMP3/$ARCH/include"
- 		LDFLAGS="$LDFLAGS -L$LAMEMP3/$ARCH/lib"
+		CFLAGS="$CFLAGS -I$LAMEMP3/$ARCH/include -I$OPENSSL/include"
+ 		LDFLAGS="$LDFLAGS -L$LAMEMP3/$ARCH/lib -L$OPENSSL/lib"
 
 		TMPDIR=${TMPDIR/%\/} $CWD/$SOURCE/configure \
 		    --target-os=darwin \
@@ -127,7 +136,7 @@ then
 		    --prefix="$THIN/$ARCH" \
 		|| exit 1
 
-		make -j3 install $EXPORT || exit 1
+		make -j4 install $EXPORT || exit 1
 		cd $CWD
 	done
 fi
