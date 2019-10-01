@@ -7,6 +7,8 @@ usage ()
 	exit 127
 }
 
+VERSION="1.6.47"
+
 if [ "$1" == "-h" ]; then
 	usage
 fi
@@ -43,8 +45,16 @@ echo $SYSROOT_PATH
 OUTPUT=`pwd`/${IOS_ARCH}
 mkdir ${IOS_ARCH}
 
+# download postgres
+if [ ! -e "aws-sdk-cpp" ]
+then
+    curl -L "https://github.com/aws/aws-sdk-cpp/tarball/${VERSION}" > "aws-sdk-cpp-${VERSION}.tar.gz"
+    tar -zxf "aws-sdk-cpp-${VERSION}.tar.gz"
+    mv aws-aws-sdk-cpp-09c22a5 aws-sdk-cpp-${VERSION}
+fi
+
 #git clone -b 1.6.47 https://github.com/aws/aws-sdk-cpp.git
-cd aws-sdk-cpp
+cd aws-sdk-cpp-${VERSION}
 mkdir build
 cd build
 
@@ -69,7 +79,7 @@ rm -r ./*
 												-DZLIB_LIBRARY_RELEASE="$INCLIBS/lib/libz.dylib" \
 												-DCMAKE_INSTALL_PREFIX="$OUTPUT" \
 												-DCMAKE_CXX_FLAGS="-std=c++11 -stdlib=libc++ -miphoneos-version-min=8.3" \
-												../../aws-sdk-cpp
+												../../aws-sdk-cpp-${VERSION}
 make -j 8
 make install
 cd ../
