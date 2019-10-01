@@ -17,7 +17,7 @@ THIN=`pwd`/"ffmpeg"
 
 CONFIGURE_FLAGS="--install-name-dir='@rpath'  --enable-cross-compile --disable-debug --disable-programs \
                  --disable-doc --enable-pic --disable-static --enable-shared --disable-bzlib --disable-iconv --disable-libopenjpeg --disable-zlib \
-                 --enable-asm --enable-pthreads --enable-openssl"
+                 --enable-asm --enable-pthreads --enable-openssl --disable-outdev=sdl2 --disable-sdl2"
 
 LAMEMP3=`pwd`/lame
 
