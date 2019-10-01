@@ -1,0 +1,29 @@
+diff --git a/src/connection_base.cxx b/src/connection_base.cxx
+index e6a43705..6cffe05e 100644
+--- a/src/connection_base.cxx
++++ b/src/connection_base.cxx
+@@ -8,6 +8,12 @@
+  * COPYING with this source code, please notify the distributor of this mistake,
+  * or contact the author.
+  */
++
++extern "C"
++{
++#include "libpq-fe.h"
++}
++
+ #include "pqxx/compiler-internal.hxx"
+ 
+ #include <algorithm>
+@@ -45,11 +51,6 @@
+ #include <sys/time.h>
+ #endif
+ 
+-extern "C"
+-{
+-#include "libpq-fe.h"
+-}
+-
+ #include "pqxx/binarystring"
+ #include "pqxx/connection"
+ #include "pqxx/connection_base"
