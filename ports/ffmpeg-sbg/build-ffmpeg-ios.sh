@@ -75,13 +75,16 @@ then
 	if [ ! -r $SOURCE ]
 	then
 		echo 'FFmpeg source not found. Trying to download...'
-		curl http://www.ffmpeg.org/releases/$SOURCE.tar.bz2 | tar xj \
-			|| exit 1
+		#curl http://www.ffmpeg.org/releases/$SOURCE.tar.bz2 | tar xj || exit 1
+        curl -L "https://github.com/SBGSports/FFmpeg/tarball/sbg" > "ffmpeg.tar.gz"
+        tar -zxf "ffmpeg.tar.gz"
+        mv SBGSports-FFmpeg-0d08f2e $SOURCE
 	fi
 
     # apply SBG patch
 	cd $SOURCE
-	patch -p1 < ../sbg_commits.patch
+
+	#patch -p1 < ../sbg_commits.patch
 	patch -p1 < ../find_openssl_configure.patch
 	cd ../
 
