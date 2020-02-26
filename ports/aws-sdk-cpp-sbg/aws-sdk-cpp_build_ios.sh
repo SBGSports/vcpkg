@@ -30,10 +30,10 @@ INCLIBS="${PWD}/../../installed/${IOS_TARGET}"
 
 if [[ "${IOS_ARCH}" == "x86_64" ]]; then
 	PLATFORM="iPhoneSimulator"
-	OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator12.2.sdk"
+	OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk"
 else
 	PLATFORM="iPhoneOS"
-	OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk"
+	OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk"
 fi
 
 DEVELOPER=`xcode-select -print-path`
@@ -58,7 +58,7 @@ cd aws-sdk-cpp-${VERSION}
 mkdir build
 cd build
 
-BUILDING="core;cognito-idp;cognito-identity;access-management;dynamodb;iam;identity-management;rds;s3;sns;sqs;sts;transfer"
+BUILDING="core;cognito-idp;cognito-identity;access-management;dynamodb;iam;identity-management;kinesis;lambda;rds;s3;sns;sqs;sts;transfer"
 
 rm -r ./*
 /Applications/CMake3.14.app/Contents/bin/cmake  -DCMAKE_OSX_SYSROOT="$OSX_SYSROOT" \
