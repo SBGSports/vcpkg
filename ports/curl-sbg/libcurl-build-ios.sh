@@ -30,7 +30,7 @@ if [ "$1" == "-h" ]; then
 fi
 
 IOS_SDK_VERSION=""
-IOS_MIN_SDK_VERSION="7.1"
+IOS_MIN_SDK_VERSION="8.0"
 
 CURL_VERSION="curl-7.64.0"
 
