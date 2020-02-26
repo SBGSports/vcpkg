@@ -1,6 +1,7 @@
 #!/bin/sh
 LAME_FILE=lame-3.99.5.tar.gz
 LAME_DIR=lame-3.99.5
+IOS_MIN_SDK_VERSION="8.0"
 
 rm -rf $LAME_DIR;
 
@@ -63,21 +64,15 @@ then
 		mkdir -p "$SCRATCH/$ARCH"
 		cd "$SCRATCH/$ARCH"
 
-		if [ "$ARCH" = "i386" -o "$ARCH" = "x86_64" ]
+		if [ "$ARCH" = "x86_64" ]
 		then
 		    PLATFORM="iPhoneSimulator"
-		    if [ "$ARCH" = "x86_64" ]
-		    then
-		    	SIMULATOR="-mios-simulator-version-min=7.0"
-                        HOST=x86_64-apple-darwin
-		    else
-		    	SIMULATOR="-mios-simulator-version-min=5.0"
-                        HOST=i386-apple-darwin
-		    fi
+		    SIMULATOR="-mios-simulator-version-min=7.0"
+            HOST=x86_64-apple-darwin
 		else
 		    PLATFORM="iPhoneOS"
-		    SIMULATOR=
-                    HOST=arm-apple-darwin
+		    SIMULATOR="-miphoneos-version-min=${IOS_MIN_SDK_VERSION}"
+            HOST=arm-apple-darwin
 		fi
 
 		XCRUN_SDK=`echo $PLATFORM | tr '[:upper:]' '[:lower:]'`
