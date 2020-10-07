@@ -58,7 +58,7 @@ cd aws-sdk-cpp-${VERSION}
 mkdir build
 cd build
 
-BUILDING="core;cognito-idp;cognito-identity;access-management;batch;dynamodb;iam;identity-management;kinesis;lambda;rds;s3;sns;sqs;sts;transfer"
+BUILDING="core;cognito-idp;cognito-identity;access-management;batch;dynamodb;iam;identity-management;kinesis;lambda;rds;s3;secretsmanager;sns;sqs;sts;transfer"
 
 rm -r ./*
 /Applications/CMake3.14.app/Contents/bin/cmake  -DCMAKE_OSX_SYSROOT="$OSX_SYSROOT" \
