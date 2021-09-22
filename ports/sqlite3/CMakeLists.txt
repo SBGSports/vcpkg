@@ -23,6 +23,7 @@ target_compile_definitions(
         -DSQLITE_ENABLE_RTREE
         -DSQLITE_ENABLE_UNLOCK_NOTIFY
         -DSQLITE_ENABLE_COLUMN_METADATA
+        -DSQLITE_ENABLE_FTS5
 )
 
 if(WITH_GEOPOLY)
