@@ -25,11 +25,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS")
     # disable that makes linkage error (e.g. require stderr usage)
     list(APPEND DISABLES no-stdio no-ui no-asm)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    if(VCPKG_TARGET_ARCHITECTURE MATCHES "arm64")
-        set(PLATFORM darwin64-arm64-cc)
-    else()
-        set(PLATFORM darwin64-x86_64-cc)
-    endif()
+    set(PLATFORM darwin64-x86_64-cc)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
     set(PLATFORM BSD-generic64)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "OpenBSD")
@@ -40,9 +36,6 @@ elseif(MINGW)
     else()
         set(PLATFORM mingw)
     endif()
-elseif(EMSCRIPTEN)
-    set(MAKE $ENV{EMSDK}/upstream/emscripten/emmake)
-    set(ENV{MAKE} $ENV{EMSDK}/upstream/emscripten/emmake)
 else()
     message(FATAL_ERROR "Unknown platform")
 endif()
@@ -87,10 +80,7 @@ else()
     file(TO_NATIVE_PATH ENV_PATH "${COMPILER_ROOT}:$ENV{PATH}")
 endif()
 set(ENV{ANDROID_DEV} "${CMAKE_SYSROOT}/usr")
-
-if(NOT IOS)
-    set(ENV{CC} "${CMAKE_C_COMPILER}")
-endif()
+set(ENV{CC} "${CMAKE_C_COMPILER}")
 
 message("ENV{ANDROID_DEV}=$ENV{ANDROID_DEV}")
 
@@ -112,6 +102,9 @@ if(BUILD_SHARED_LIBS)
     if(CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR CMAKE_SYSTEM_NAME STREQUAL "iOS")
         set(LIB_EXT dylib)
         set(LIB_EXTS ${SHLIB_VERSION}.${LIB_EXT})
+	elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
+        set(LIB_EXT so)
+        set(LIB_EXTS ${SHLIB_VERSION}.${LIB_EXT})
     elseif(MINGW)
         string(REPLACE "." "_" SHLIB_VERSION "${SHLIB_VERSION}")
         set(BIN_EXT dll)
@@ -129,13 +122,14 @@ endif()
 foreach(lib ssl crypto)
     foreach(ext ${LIB_EXTS})
         list(APPEND INSTALL_LIBS "${BUILDDIR}/lib${lib}.${ext}")
-        list(APPEND INSTALL_PKG_CONFIGS "${BUILDDIR}/lib${lib}.pc")
     endforeach()
     foreach(ext ${BIN_EXTS})
     # This might be wrong for targets which don't follow this naming scheme, but I'm not aware of any
         if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
             list(APPEND INSTALL_BINS "${BUILDDIR}/lib${lib}-${SHLIB_VERSION}-x64.${ext}")
-        else()
+        elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "Android")
+            list(APPEND INSTALL_BINS "${BUILDDIR}/lib${lib}.${ext}")
+		else()
             list(APPEND INSTALL_BINS "${BUILDDIR}/lib${lib}-${SHLIB_VERSION}.${ext}")
         endif()
     endforeach()
@@ -149,102 +143,60 @@ else()
     set(PATH_VAR ":$ENV{PATH}")
 endif()
 
+
+
 add_custom_command(
-        OUTPUT "${BUILDDIR}/Makefile"
+    OUTPUT "${BUILDDIR}/Makefile"
+    COMMAND ${ENV_COMMAND} CC=${CMAKE_C_COMPILER}
+    COMMAND ${ENV_COMMAND} AR=${CMAKE_AR}
+    COMMAND ${ENV_COMMAND} LD=${CMAKE_LINKER}
+    COMMAND ${ENV_COMMAND} RANLIB=${CMAKE_RANLIB}
+    COMMAND ${ENV_COMMAND} MAKE=${MAKE}
+    COMMAND ${ENV_COMMAND} MAKEDEPPROG=${CMAKE_C_COMPILER}
+    COMMAND ${ENV_COMMAND} "PATH=${MSYS_BIN_DIR}${PATH_VAR}"
+    COMMAND "${PERL}" Configure
+        ${SHARED}
+        enable-static-engine
+        no-zlib
+        no-ssl2
+        no-idea
+        no-bf
+        no-cast
+        no-seed
+        no-md2
+        no-tests
+        ${DISABLES}
+        ${PLATFORM}
+        "--prefix=${CMAKE_INSTALL_PREFIX}"
+        "--openssldir=/etc/ssl"
+        ${CFLAGS}
+    COMMAND "${CMAKE_COMMAND}" "-DDIR=${BUILDDIR}" -P "${CMAKE_CURRENT_LIST_DIR}/remove-deps.cmake"
+    VERBATIM
+    WORKING_DIRECTORY "${BUILDDIR}"
+)
+
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL "Android")
+    add_custom_target(build_libs ALL
         COMMAND ${ENV_COMMAND} "PATH=${MSYS_BIN_DIR}${PATH_VAR}"
+        COMMAND "${CMAKE_COMMAND}" -E touch "${BUILDDIR}/krb5.h"
+        COMMAND "${MAKE}" SHLIB_VERSION_NUMBER= SHLIB_EXT=.1.1.so build_libs
         VERBATIM
         WORKING_DIRECTORY "${BUILDDIR}"
-)
-
-if(NOT IOS)
-    add_custom_command(
-        OUTPUT "${BUILDDIR}/Makefile"
-        COMMAND ${ENV_COMMAND} CC=${CMAKE_C_COMPILER}
-        COMMAND ${ENV_COMMAND} AR=${CMAKE_AR}
-        COMMAND ${ENV_COMMAND} LD=${CMAKE_LINKER}
-        COMMAND ${ENV_COMMAND} RANLIB=${CMAKE_RANLIB}
-        COMMAND ${ENV_COMMAND} MAKE=${MAKE}
-        COMMAND ${ENV_COMMAND} MAKEDEPPROG=${CMAKE_C_COMPILER}
-        VERBATIM
-        APPEND
+        DEPENDS "${BUILDDIR}/Makefile"
+        BYPRODUCTS ${INSTALL_LIBS}
     )
-
-    if(EMSCRIPTEN)
-        list(APPEND DISABLES
-                threads
-                no-engine
-                no-dso
-                no-asm
-                no-shared
-                no-sse2
-                no-srtp
-                )
-    else()
-        list(APPEND DISABLES
-                enable-static-engine
-                no-zlib
-                no-ssl2
-                no-idea
-                no-cast
-                no-seed
-                no-md2
-                no-tests)
-    endif()
-endif()
-
-if(EMSCRIPTEN)
-    add_custom_command(
-            OUTPUT "${BUILDDIR}/Makefile"
-            COMMAND "$ENV{EMSDK}/upstream/emscripten/emconfigure" ./config
-            ${SHARED}
-            ${DISABLES}
-            "--prefix=${CMAKE_INSTALL_PREFIX}"
-            "--openssldir=/etc/ssl"
-            "--cross-compile-prefix=\"/\""
-            VERBATIM
-            APPEND
-    )
-
-    add_custom_target(build_libs ALL
-            COMMAND ${ENV_COMMAND} "PATH=${MSYS_BIN_DIR}${PATH_VAR}"
-            COMMAND "${CMAKE_COMMAND}" -E touch "${BUILDDIR}/krb5.h"
-            COMMAND "${MAKE}" make build_libs
-            VERBATIM
-            WORKING_DIRECTORY "${BUILDDIR}"
-            DEPENDS "${BUILDDIR}/Makefile"
-            BYPRODUCTS ${INSTALL_LIBS}
-            )
 else()
-    add_custom_command(
-            OUTPUT "${BUILDDIR}/Makefile"
-            COMMAND "${PERL}" Configure
-            ${SHARED}
-            ${DISABLES}
-            ${PLATFORM}
-            "--prefix=${CMAKE_INSTALL_PREFIX}"
-            "--openssldir=/etc/ssl"
-            ${CFLAGS}
-            VERBATIM
-            APPEND
-    )
-
     add_custom_target(build_libs ALL
-            COMMAND ${ENV_COMMAND} "PATH=${MSYS_BIN_DIR}${PATH_VAR}"
-            COMMAND "${CMAKE_COMMAND}" -E touch "${BUILDDIR}/krb5.h"
-            COMMAND "${MAKE}" -j ${VCPKG_CONCURRENCY} build_libs
-            VERBATIM
-            WORKING_DIRECTORY "${BUILDDIR}"
-            DEPENDS "${BUILDDIR}/Makefile"
-            BYPRODUCTS ${INSTALL_LIBS}
-            )
+        COMMAND ${ENV_COMMAND} "PATH=${MSYS_BIN_DIR}${PATH_VAR}"
+        COMMAND "${CMAKE_COMMAND}" -E touch "${BUILDDIR}/krb5.h"
+        COMMAND "${MAKE}" build_libs
+        VERBATIM
+        WORKING_DIRECTORY "${BUILDDIR}"
+        DEPENDS "${BUILDDIR}/Makefile"
+        BYPRODUCTS ${INSTALL_LIBS}
+    )
 endif()
 
-add_custom_command(
-        OUTPUT "${BUILDDIR}/Makefile"
-        COMMAND "${CMAKE_COMMAND}" "-DDIR=${BUILDDIR}" -P "${CMAKE_CURRENT_LIST_DIR}/remove-deps.cmake"
-        VERBATIM
-        APPEND
-)
 
 if((CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR CMAKE_SYSTEM_NAME STREQUAL "iOS") AND BUILD_SHARED_LIBS)
     if(DEFINED CMAKE_INSTALL_NAME_DIR)
@@ -273,8 +225,4 @@ install(
 install(
     FILES ${INSTALL_BINS}
     DESTINATION bin
-)
-install(
-    FILES ${INSTALL_PKG_CONFIGS}
-    DESTINATION lib/pkgconfig
 )
