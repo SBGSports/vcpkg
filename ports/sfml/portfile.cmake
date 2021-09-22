@@ -27,6 +27,10 @@ vcpkg_configure_cmake(
         -DSFML_USE_SYSTEM_DEPS=ON
         -DSFML_MISC_INSTALL_PREFIX=share/sfml
         -DSFML_GENERATE_PDB=OFF
+		-DSFML_BUILD_AUDIO=ON
+		-DSFML_BUILD_GRAPHICS=OFF
+		-DSFML_BUILD_WINDOW=OFF
+		-DSFML_BUILD_NETWORK=OFF
 )
 
 vcpkg_install_cmake()
