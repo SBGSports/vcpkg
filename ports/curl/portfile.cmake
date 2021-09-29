@@ -85,7 +85,6 @@ endif()
 
 vcpkg_fixup_cmake_targets(CONFIG_PATH lib/cmake/CURL)
 
-file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 
 file(INSTALL ${CURRENT_PACKAGES_DIR}/bin/curl-config DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT})
 file(REMOVE ${CURRENT_PACKAGES_DIR}/bin/curl-config ${CURRENT_PACKAGES_DIR}/debug/bin/curl-config)
@@ -183,6 +182,10 @@ if(VCPKG_TARGET_IS_WINDOWS)
 elseif(VCPKG_TARGET_IS_LINUX)
     vcpkg_fixup_pkgconfig(SYSTEM_LIBRARIES pthread dl c)
 endif()
+
+file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
+file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/bin)
+file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin)
 
 file(INSTALL ${CURRENT_PORT_DIR}/vcpkg-cmake-wrapper.cmake DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT})
 file(INSTALL ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
