@@ -3,6 +3,7 @@ if(NOT _VCPKG_IOS_TOOLCHAIN)
 
     # Set the CMAKE_SYSTEM_NAME for try_compile calls.
     set(CMAKE_SYSTEM_NAME iOS CACHE STRING "")
+    set(CMAKE_MIN_IOS "9.0" CACHE STRING "9.0")
 
     macro(_vcpkg_setup_ios_arch arch)
         unset(_vcpkg_ios_system_processor)
