@@ -1,0 +1,13 @@
+diff --git a/aws-cpp-sdk-core/source/http/curl/CurlHttpClient.cpp b/aws-cpp-sdk-core/source/http/curl/CurlHttpClient.cpp
+index a11144cc9..0df7674e5 100755
+--- a/aws-cpp-sdk-core/source/http/curl/CurlHttpClient.cpp
++++ b/aws-cpp-sdk-core/source/http/curl/CurlHttpClient.cpp
+@@ -553,7 +553,7 @@ std::shared_ptr<HttpResponse> CurlHttpClient::MakeRequest(const std::shared_ptr<
+ 
+ #if LIBCURL_VERSION_MAJOR >= 7
+ #if LIBCURL_VERSION_MINOR >= 34
+-            curl_easy_setopt(connectionHandle, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
++            curl_easy_setopt(connectionHandle, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
+ #endif //LIBCURL_VERSION_MINOR
+ #endif //LIBCURL_VERSION_MAJOR
+         }

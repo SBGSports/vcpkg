@@ -9,6 +9,7 @@ vcpkg_from_github(
     PATCHES
         patch-relocatable-rpath.patch
         fix-AWSSDKCONFIG.patch
+		enforce_tls_v12.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_CRT_LINKAGE}" "dynamic" FORCE_SHARED_CRT)
