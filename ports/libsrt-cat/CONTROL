@@ -1,0 +1,7 @@
+Source: libsrt-cat
+Version: 1.5.2
+Description: Secure Reliable Transport (SRT) is an open source transport technology that optimizes streaming performance across unpredictable networks, such as the Internet.
+Build-Depends: openssl-sbg, pthreads (windows)
+
+Feature: tool
+Description: Builds libsrt executable
