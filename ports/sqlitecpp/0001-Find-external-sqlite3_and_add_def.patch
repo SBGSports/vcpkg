@@ -1,0 +1,26 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4a3e492..b49e2e1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -95,6 +95,11 @@ if (SQLITE_USE_LEGACY_STRUCT)
+     add_definitions(-DSQLITE_USE_LEGACY_STRUCT)
+ endif (SQLITE_USE_LEGACY_STRUCT)
+ 
++option(SQLITE_OMIT_LOAD_EXTENSION "Omit load extensions" OFF)
++if (SQLITE_OMIT_LOAD_EXTENSION) 
++    # Omit load extensions
++    add_definitions(-DSQLITE_OMIT_LOAD_EXTENSION)
++endif (SQLITE_OMIT_LOAD_EXTENSION)
+ 
+ ## Build the C++ Wrapper ##
+ 
+@@ -193,7 +198,8 @@ install(EXPORT ${PROJECT_NAME}Config DESTINATION lib/cmake/${PROJECT_NAME})
+ ## Build provided copy of SQLite3 C library ##
+ 
+ # TODO NOCOMMIT
+-#find_package(sqlite3)
++find_host_package(sqlite3 REQUIRED)
++target_link_libraries(SQLiteCpp PRIVATE sqlite3)
+ #if(sqlite3_VERSION VERSION_LESS "3.19")
+ #    set_target_properties(SQLiteCpp PROPERTIES COMPILE_FLAGS "-DSQLITECPP_HAS_MEM_STRUCT")
+ #endif()

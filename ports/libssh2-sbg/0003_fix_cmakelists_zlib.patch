@@ -1,0 +1,13 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 2eaf4cc..f3260da 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -239,7 +239,7 @@ option(ENABLE_ZLIB_COMPRESSION "Use zlib for compression")
+ add_feature_info(Compression ENABLE_ZLIB_COMPRESSION
+   "using zlib for compression")
+ if(ENABLE_ZLIB_COMPRESSION)
+-  find_package(ZLIB REQUIRED)
++  find_host_package(ZLIB REQUIRED)
+ 
+   target_include_directories(libssh2 PRIVATE ${ZLIB_INCLUDE_DIRS})
+   list(APPEND LIBRARIES ${ZLIB_LIBRARIES})

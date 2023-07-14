@@ -1,0 +1,18 @@
+diff --git a/configure b/configure
+index 06361b9cfd..c07251612c 100755
+--- a/configure
++++ b/configure
+@@ -5916,10 +5916,9 @@ enabled omx               && { check_header OMX_Core.h ||
+                                 check_header OMX_Core.h ; } ||
+                                die "ERROR: OpenMAX IL headers not found"; }
+ enabled openssl           && { use_pkg_config openssl openssl/ssl.h OPENSSL_init_ssl ||
+-                               use_pkg_config openssl openssl/ssl.h SSL_library_init ||
+-                               check_lib openssl/ssl.h SSL_library_init -lssl -lcrypto ||
+-                               check_lib openssl/ssl.h SSL_library_init -lssl32 -leay32 ||
+-                               check_lib openssl/ssl.h SSL_library_init -lssl -lcrypto -lws2_32 -lgdi32 ||
++                               check_lib openssl/ssl.h OPENSSL_init_ssl -lssl -lcrypto ||
++                               check_lib openssl/ssl.h OPENSSL_init_ssl -lssl32 -leay32 ||
++                               check_lib openssl/ssl.h OPENSSL_init_ssl -lssl -lcrypto -lws2_32 -lgdi32 ||
+                                die "ERROR: openssl not found"; }
+ enabled qtkit_indev      && { check_header_objcc QTKit/QTKit.h || disable qtkit_indev; }
+ 

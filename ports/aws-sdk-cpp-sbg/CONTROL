@@ -350,6 +350,9 @@ Description: C++ SDK for the AWS sagemaker-runtime service
 Feature: sdb
 Description: C++ SDK for the AWS sdb service
 
+Feature: secretsmanager
+Description: C++ SDK for the AWS secretsmanager service
+
 Feature: serverlessrepo
 Description: C++ SDK for the AWS serverlessrepo service
 
