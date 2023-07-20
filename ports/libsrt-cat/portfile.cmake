@@ -17,11 +17,18 @@ else()
     set(BUILD_STATIC ON)
 endif()
 
+# tools
+set(BUILD_APPS OFF)
+if("tool" IN_LIST FEATURES)
+    set(BUILD_APPS ON)
+endif()
+
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     OPTIONS
         -DENABLE_SHARED=${BUILD_DYNAMIC}
         -DENABLE_STATIC=${BUILD_STATIC}
+        -DENABLE_APPS=${BUILD_APPS}
         -DINSTALL_DOCS=ON
         -DINSTALL_PKG_CONFIG_MODULE=ON
         -DENABLE_SUFLIP=OFF # Since there are some file not found, disable this feature
