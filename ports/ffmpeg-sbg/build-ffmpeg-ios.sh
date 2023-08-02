@@ -78,7 +78,7 @@ then
 		#curl http://www.ffmpeg.org/releases/$SOURCE.tar.bz2 | tar xj || exit 1
         curl -L "https://github.com/SBGSports/FFmpeg/tarball/sbg" > "ffmpeg.tar.gz"
         tar -zxf "ffmpeg.tar.gz"
-        mv SBGSports-FFmpeg-0d08f2e $SOURCE
+        mv SBGSports-FFmpeg-63aa275 $SOURCE
 	fi
 
     # apply SBG patch
