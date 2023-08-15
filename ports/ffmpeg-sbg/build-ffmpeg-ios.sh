@@ -16,6 +16,7 @@ THIN=`pwd`/"ffmpeg"
 #FDK_AAC=`pwd`/../fdk-aac-build-script-for-iOS/fdk-aac-ios
 
 CONFIGURE_FLAGS="--install-name-dir='@rpath'  --enable-cross-compile --disable-debug --disable-programs \
+                 --disable-avdevice \
                  --disable-doc --enable-pic --disable-static --enable-shared --disable-bzlib --disable-iconv --disable-libopenjpeg --disable-zlib \
                  --enable-asm --enable-pthreads --enable-openssl --disable-outdev=sdl2 --disable-sdl2"
 
@@ -67,8 +68,9 @@ then
 	then
 		echo 'gas-preprocessor.pl not found. Trying to install...'
 		(curl -L https://github.com/libav/gas-preprocessor/raw/master/gas-preprocessor.pl \
-			-o /usr/local/bin/gas-preprocessor.pl \
-			&& chmod +x /usr/local/bin/gas-preprocessor.pl) \
+			-o gas-preprocessor.pl \
+			&& chmod +x gas-preprocessor.pl \
+			&& sudo mv gas-preprocessor.pl /usr/local/bin/gas-preprocessor.pl) \
 			|| exit 1
 	fi
 
