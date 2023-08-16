@@ -15,10 +15,24 @@ THIN=`pwd`/"ffmpeg"
 #X264=`pwd`/fat-x264
 #FDK_AAC=`pwd`/../fdk-aac-build-script-for-iOS/fdk-aac-ios
 
-CONFIGURE_FLAGS="--install-name-dir='@rpath'  --enable-cross-compile --disable-debug --disable-programs \
+CONFIGURE_FLAGS="--install-name-dir='@rpath' \
+                 --enable-cross-compile \
+                 --enable-shared \
+                 --disable-static \
+                 --disable-debug \
+                 --disable-doc \
+                 --disable-programs \
                  --disable-avdevice \
-                 --disable-doc --enable-pic --disable-static --enable-shared --disable-bzlib --disable-iconv --disable-libopenjpeg --disable-zlib \
-                 --enable-asm --enable-pthreads --enable-openssl --disable-outdev=sdl2 --disable-sdl2"
+                 --enable-asm \
+                 --disable-bzlib \
+                 --enable-pic \
+                 --disable-iconv \
+                 --disable-libopenjpeg \
+                 --disable-libxcb \
+                 --enable-openssl \
+                 --enable-pthreads \
+                 --disable-sdl2 \
+                 --disable-zlib"
 
 LAMEMP3=`pwd`/lame
 
