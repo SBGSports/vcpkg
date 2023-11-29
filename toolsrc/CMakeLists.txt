@@ -58,6 +58,7 @@ if(CLANG AND NOT MSVC)
     if ( NOT USES_LIBSTDCXX AND NOT USES_LIBCXX )
         message(FATAL_ERROR "Can't find which C++ runtime is in use")
     endif()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__cpp_lib_filesystem")
 endif()
 
 if(GCC OR (CLANG AND USES_LIBSTDCXX))

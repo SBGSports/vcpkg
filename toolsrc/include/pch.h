@@ -27,7 +27,7 @@
 #include <cstdarg>
 #include <cstddef>
 #include <cstdint>
-#if defined(_WIN32)
+#if (defined(_MSC_VER) && _MSC_VER > 1900) || defined(__cpp_lib_filesystem)
 #include <filesystem>
 #else
 #include <experimental/filesystem>
