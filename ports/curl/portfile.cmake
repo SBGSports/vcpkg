@@ -1,17 +1,20 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO curl/curl
-    REF 315ee3fe75dade912b48a21ceec9ccda0230d937 #curl-7_73_0
-    SHA512 db9385d63688256c335f08fe044c67e7c17e2fbcbb47df234d5f9a1586b259edb07a37845c2ad85d2da00738b19dc0e718d91d05b2881c2828fec2660f858444
+    REF 7161cb17c01dcff1dc5bf89a18437d9d729f1ecd #curl-8_5_0
+    SHA512 c20053795d149fb74265d781ca7422a4d503291e9966a21444b5d5c55417de74c0de11238bf31e7692213c2e109e730f340752567968ff41dc6fb503d8e6dce0
     HEAD_REF master
     PATCHES
         0002_fix_uwp.patch
-        0004_nghttp2_staticlib.patch
         0005_remove_imp_suffix.patch
-        0006_fix_tool_depends.patch
-        0007_disable_tool_export_curl_target.patch
-        0010_fix_othertests_cmake.patch
-        0011_fix_static_build.patch
+        0012-fix-dependency-idn2.patch
+        0020-fix-pc-file.patch
+        0022-deduplicate-libs.patch
+        mbedtls-ws2_32.patch
+        export-components.patch
+        dependencies.patch
+        cmake-config.patch
+        cmake-config-ios.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" CURL_STATICLIB)
