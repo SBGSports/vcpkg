@@ -1,13 +1,13 @@
-vcpkg_from_gitlab(
-    GITLAB_URL https://gitlab.gnome.org/
+vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO GNOME/libxml2
     REF "v${VERSION}"
-    SHA512 3f2de446657bf3c23c92358ce8946f59253b9fcc09577b59eecaffdbd97e051659855c79f4882ee9f8841dd194b6bd5de2a8017691473b505e905b9dde6a1bc9
+    SHA512 6d32311feda4b415f50236dbc1b982094fafe46f86bb3f2ad21365183bd7e9011d00e12c0c23827daf851022a20c99f7cc646e5957a10946300bdc836f91f924
     HEAD_REF master
     PATCHES
         disable-docs.patch
         fix_cmakelist.patch
+        fix_ios_compilation.patch
 )
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
@@ -21,6 +21,9 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
         "tools" LIBXML2_WITH_PROGRAMS
         "icu"  LIBXML2_WITH_ICU
 )
+
+vcpkg_find_acquire_program(PKGCONFIG)
+
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
@@ -31,7 +34,6 @@ vcpkg_cmake_configure(
         -DLIBXML2_WITH_CATALOG=ON
         -DLIBXML2_WITH_DEBUG=ON
         -DLIBXML2_WITH_ISO8859X=ON
-        -DLIBXML2_WITH_MEM_DEBUG=OFF
         -DLIBXML2_WITH_MODULES=ON
         -DLIBXML2_WITH_OUTPUT=ON
         -DLIBXML2_WITH_PATTERN=ON
@@ -50,6 +52,7 @@ vcpkg_cmake_configure(
         -DLIBXML2_WITH_XINCLUDE=ON
         -DLIBXML2_WITH_XPATH=ON
         -DLIBXML2_WITH_XPTR=ON
+        "-DPKG_CONFIG_EXECUTABLE=${PKGCONFIG}"
 )
 
 vcpkg_cmake_install()

@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO axboe/liburing
     REF "liburing-${VERSION}"
-    SHA512 d40d041b94bb0f004bd92890988c0e4b8a7bb9ae43659790ee4b19e5417f7dc5b9a554489834769ee71edfc6a44bcd87a5fca34845f61cc80e4e8e588c6950ec
+    SHA512 6fb6e7ce66917d9438095e05916f90d834034ac3f6d6d8b6ee1eadf48ab9e499efa4af489dc72f8acc4a0b018f917ffcb8af4af682b47512566205519dd1f5db
     HEAD_REF master
     PATCHES
         fix-configure.patch     # ignore unsupported options, handle ENABLE_SHARED
@@ -11,6 +11,10 @@ vcpkg_from_github(
 
 # https://github.com/axboe/liburing/blob/liburing-2.8/src/Makefile#L13
 set(ENV{CFLAGS} "$ENV{CFLAGS} -O3 -Wall -Wextra -fno-stack-protector")
+
+# without this calls to `realpath ${prefix}` inside the build system fail for the debug build if this is the first
+# library to be installed
+file(MAKE_DIRECTORY "${CURRENT_INSTALLED_DIR}/debug")
 
 # note: check ${SOURCE_PATH}/liburing.spec before updating configure options
 vcpkg_configure_make(

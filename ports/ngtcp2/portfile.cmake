@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO ngtcp2/ngtcp2
     REF "v${VERSION}"
-    SHA512 0fa71544d70080ed9b0373383aaf985c7ed162913a480371affb3131cb3bb55e9a9653896da3801f5b1d121fc654232f5e463298f8070413f309bb4a514898f8
+    SHA512 0a61d79b411cc24928bb84e658f59be22769ed269c5608a8ebdffc579832d3a0272a65e16f20d95521a2b9ce2adc3b6e17a2753527f2a6b1002a920bd544eed7
     HEAD_REF main
 )
 
@@ -13,7 +13,7 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     FEATURES
         wolfssl  ENABLE_WOLFSSL
         gnutls   ENABLE_GNUTLS
-        libressl ENABLE_OPENSSL
+        openssl  ENABLE_OPENSSL
 )
 
 vcpkg_cmake_configure(
